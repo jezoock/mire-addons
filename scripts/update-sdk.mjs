@@ -12,7 +12,8 @@
  * directement (suppression des types, Node 22.18 ou plus) : aucune construction, aucune dépendance.
  */
 import { execFileSync } from 'node:child_process';
-import { cpSync, existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { chmodSync, cpSync, existsSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -46,6 +47,21 @@ export function vendoredPackage(upstream) {
   };
 }
 
+/**
+ * Empreintes sha256 des fichiers copiés (chemins relatifs à `dir`, triés) : un test vérifie que la copie n'a pas
+ * été modifiée à la main. On corrige le SDK dans Mire, puis on relance ce script.
+ */
+export function sdkFingerprints(dir = SDK_DIR) {
+  const out = {};
+  const walk = (rel) => {
+    const abs = path.join(dir, rel);
+    if (statSync(abs).isDirectory()) for (const e of readdirSync(abs).sort()) walk(rel ? `${rel}/${e}` : e);
+    else out[rel] = createHash('sha256').update(readFileSync(abs)).digest('hex');
+  };
+  for (const entry of COPIED) walk(entry);
+  return out;
+}
+
 /** Copie le SDK d'un clone de Mire (`mireDir`) vers `dest`, et note son origine. */
 export function copySdk(mireDir, commit, repo, dest = SDK_DIR) {
   const src = path.join(mireDir, SDK_PATH);
@@ -53,8 +69,10 @@ export function copySdk(mireDir, commit, repo, dest = SDK_DIR) {
   for (const entry of COPIED) rmSync(path.join(dest, entry), { recursive: true, force: true });
   for (const entry of COPIED) cpSync(path.join(src, entry), path.join(dest, entry), { recursive: true });
   const upstream = JSON.parse(readFileSync(path.join(src, 'package.json'), 'utf8'));
+  // L'outil `mire-plugin` se lance directement (lien de node_modules/.bin) : il doit être exécutable.
+  if (existsSync(path.join(dest, 'src', 'cli.ts'))) chmodSync(path.join(dest, 'src', 'cli.ts'), 0o755);
   writeFileSync(path.join(dest, 'package.json'), `${JSON.stringify(vendoredPackage(upstream), null, 2)}\n`);
-  const source = { repository: repo, path: SDK_PATH, commit, version: upstream.version };
+  const source = { repository: repo, path: SDK_PATH, commit, version: upstream.version, files: sdkFingerprints(dest) };
   writeFileSync(path.join(dest, 'source.json'), `${JSON.stringify(source, null, 2)}\n`);
   return source;
 }
