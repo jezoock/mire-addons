@@ -134,7 +134,8 @@ validation vérifie que le manifeste, les fichiers qu'il déclare et les catalog
 
 1. validation de tous les plugins par le SDK (`npm run validate`) ;
 2. lecture de la clé privée dans le secret `MIRE_ADDONS_SIGNING_KEY` ; sans secret, échec avec un message clair, avant
-   tout accès à GitHub ; si `keys/` contient des clés publiques, la clé du secret doit être l'une d'elles ;
+   tout accès à GitHub ; la clé publique tirée du secret doit être identique à `keys/mire-addons-signing.pub.pem`, sinon arrêt avec un
+   message clair (empreintes seulement, jamais la clé privée) ;
 3. empaquetage de chaque plugin ;
 4. pour chaque paquet : si la Release `<id>@<version>` existe, son contenu doit être identique (mêmes fichiers, mêmes
    octets), sinon la publication s'arrête (« augmentez la version ») ; sinon la Release est créée, puis le paquet est
