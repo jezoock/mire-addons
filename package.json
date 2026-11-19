@@ -1,0 +1,27 @@
+{
+  "name": "mire-addons",
+  "private": true,
+  "description": "Dépôt officiel des plugins de Mire : sources, validation, empaquetage et index signé",
+  "license": "MIT",
+  "type": "module",
+  "workspaces": [
+    "sdk",
+    "plugins/*"
+  ],
+  "engines": {
+    "node": ">=22.18"
+  },
+  "scripts": {
+    "validate": "node scripts/validate.mjs",
+    "build": "npm run build --workspaces --if-present",
+    "test": "node --test \"test/**/*.test.mjs\" \"plugins/*/test/**/*.test.mjs\"",
+    "pack": "node scripts/pack.mjs",
+    "index:test": "node scripts/index-test.mjs",
+    "publish:release": "node scripts/publish.mjs",
+    "keygen": "node scripts/keygen.mjs",
+    "update-sdk": "node scripts/update-sdk.mjs"
+  },
+  "devDependencies": {
+    "@mire/plugin-sdk": "0.1.0"
+  }
+}

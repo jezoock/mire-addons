@@ -1,0 +1,13 @@
+{
+  "meta": {
+    "code": "fr",
+    "name": "Français",
+    "app": "1.0.0"
+  },
+  "messages": {
+    "plugin": {
+      "name": "Plugin d'exemple",
+      "description": "Un plugin de données seules qui montre comment les plugins sont publiés. Il ajoute un pack vide."
+    }
+  }
+}
