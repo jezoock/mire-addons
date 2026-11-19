@@ -11,7 +11,7 @@ import { createTgz } from './lib/tar.mjs';
 
 export const PACKAGES_DIR = path.join(ROOT, 'dist', 'packages');
 
-/** Empaquette les plugins de `dirs` dans `out` ; rend [{ id, version, file, sha256, size }]. */
+/** Empaquette les plugins de `dirs` dans `out` ; rend [{ id, version, file, sha256, size, tgz, files }]. */
 export async function packAll(dirs, out, { official }) {
   await rm(out, { recursive: true, force: true });
   await mkdir(out, { recursive: true });
@@ -22,7 +22,7 @@ export async function packAll(dirs, out, { official }) {
     const tgz = createTgz(r.files);
     const file = packageFileName(r.manifest.id, r.manifest.version);
     await writeFile(path.join(out, file), tgz);
-    built.push({ id: r.manifest.id, version: r.manifest.version, file, sha256: sha256(tgz), size: tgz.length });
+    built.push({ id: r.manifest.id, version: r.manifest.version, file, sha256: sha256(tgz), size: tgz.length, tgz, files: r.files });
   }
   await writeFile(path.join(out, 'SHA256SUMS'), built.map((b) => `${b.sha256}  ${b.file}\n`).join(''));
   return built;
