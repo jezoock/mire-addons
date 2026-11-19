@@ -1,0 +1,95 @@
+# Vérification de chaque PR et publication des plugins à chaque fusion sur main.
+#
+# - « verifier » (toutes les PR, main, lancement manuel) : validation des manifestes par le SDK, build, tests,
+#   empaquetage .tgz et sha256, puis toute la chaîne de publication dans un dossier local, signée par une clé de test
+#   générée pour l'occasion. Lecture seule, aucun secret.
+# - « publier » (main seulement, jamais sur une PR) : Releases GitHub des nouvelles versions, index signé par la clé du
+#   secret MIRE_ADDONS_SIGNING_KEY, puis relecture de l'index publié à son adresse publique.
+#
+# Les actions sont épinglées par SHA de commit (la version est en commentaire).
+name: CI et publication
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  verifier:
+    name: Validation, build, tests, paquets (Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        # 22 : minimum annoncé par engines.node (22.18, qui exécute le TypeScript du SDK) ; 24 : celui de Mire.
+        node: [22, 24]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: ${{ matrix.node }}
+      - run: npm ci
+      - name: Validation des manifestes (validateur du SDK)
+        run: npm run validate
+      - run: npm run build
+      - run: npm test
+      - name: Empaquetage et sha256
+        run: npm run pack
+      - name: Chaîne de publication avec une clé de test
+        run: |
+          npm run index:test
+          node scripts/verify-index.mjs dist/test-repo/releases/index/index.json --key dist/test-repo/test.pub.pem \
+            $(node -p "require('./repository.json').official ? '--official' : ''")
+      - name: Paquets et index de test
+        if: matrix.node == 24
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: paquets-et-index-de-test
+          path: |
+            dist/packages/
+            dist/test-repo/
+          if-no-files-found: error
+          retention-days: 14
+
+  publier:
+    name: Publication (Releases et index signé)
+    needs: verifier
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    permissions:
+      # Créer les Releases et remplacer l'index : le seul job qui écrit.
+      contents: write
+    concurrency:
+      group: publication
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+      - run: npm ci
+      - run: npm run validate
+      - name: Publication
+        env:
+          # La clé n'est donnée qu'à cette étape, et le script ne l'affiche jamais.
+          MIRE_ADDONS_SIGNING_KEY: ${{ secrets.MIRE_ADDONS_SIGNING_KEY }}
+          GH_TOKEN: ${{ github.token }}
+        run: npm run publish:release
+      - name: Lecture publique de l'index et des paquets
+        run: |
+          node scripts/verify-index.mjs "https://github.com/${GITHUB_REPOSITORY}/releases/download/index/index.json" \
+            --key dist/index-signing.pub.pem --packages --retries 4 \
+            $(node -p "require('./repository.json').official ? '--official' : ''")
