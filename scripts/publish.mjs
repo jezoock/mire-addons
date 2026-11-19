@@ -7,9 +7,9 @@
  * - MIRE_ADDONS_SIGNING_KEY : clé privée ed25519 (PKCS#8 PEM), secret du dépôt. Jamais affichée.
  * - GITHUB_REPOSITORY (`propriétaire/dépôt`), GITHUB_SHA (commit publié), GH_TOKEN (pour `gh`) : fournis par la CI.
  *
- * Écrit aussi `dist/index.json` et `dist/index-signing.pub.pem` (clé publique, pour l'étape de vérification).
+ * Avant de signer, la clé du secret doit correspondre à `keys/mire-addons-signing.pub.pem`. Écrit aussi `dist/index.json`.
  */
-import { readdir, readFile, writeFile } from 'node:fs/promises';
+import { readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { createPublicKey } from 'node:crypto';
 import { keyId, loadPrivateKey, loadPublicKey } from './lib/index-file.mjs';
@@ -19,7 +19,8 @@ import { GitHubStore } from './lib/store.mjs';
 import { packAll, PACKAGES_DIR } from './pack.mjs';
 
 const KEY_VAR = 'MIRE_ADDONS_SIGNING_KEY';
-const KEYS_DIR = path.join(ROOT, 'keys');
+/** Clé publique officielle versionnée ; la CI relit l'index publié avec elle. */
+export const COMMITTED_KEY = path.join(ROOT, 'keys', 'mire-addons-signing.pub.pem');
 
 /** Clé privée lue dans l'environnement ; erreur explicite si le secret manque. */
 export function signingKeyFromEnv(env = process.env) {
@@ -33,15 +34,28 @@ export function signingKeyFromEnv(env = process.env) {
   return loadPrivateKey(pem);
 }
 
-/** Si des clés publiques sont versionnées dans keys/, la clé du secret doit être l'une d'elles. */
-export async function checkCommittedKey(privateKey, dir = KEYS_DIR) {
-  const files = (await readdir(dir).catch(() => [])).filter((f) => f.endsWith('.pub.pem'));
-  if (files.length === 0) return null;
-  const ids = await Promise.all(files.map(async (f) => keyId(loadPublicKey(await readFile(path.join(dir, f), 'utf8')))));
-  if (!ids.includes(keyId(privateKey))) {
-    throw new Error(`La clé du secret ${KEY_VAR} (${keyId(privateKey)}) ne correspond à aucune clé publique de keys/ : index non publié.`);
+/**
+ * La clé publique tirée du secret doit être identique à la clé officielle versionnée (`keys/`). Sinon on s'arrête
+ * avant de signer : un index signé par une autre clé serait rejeté par Mire. Seules les empreintes (publiques) sont
+ * citées, jamais la clé privée.
+ */
+export async function checkCommittedKey(privateKey, file = COMMITTED_KEY) {
+  const name = path.relative(ROOT, file) || file;
+  let committed;
+  try {
+    committed = loadPublicKey(await readFile(file, 'utf8'));
+  } catch (err) {
+    if (err.code !== 'ENOENT') throw new Error(`La clé publique versionnée ${name} est illisible : ${err.message}`);
+    throw new Error(`La clé publique officielle ${name} est absente du dépôt : index non signé, rien n'est publié.`);
   }
-  return keyId(privateKey);
+  const fromSecret = keyId(createPublicKey(privateKey));
+  if (fromSecret !== keyId(committed)) {
+    throw new Error(
+      `La clé du secret ${KEY_VAR} (empreinte ${fromSecret}) n'est pas la clé publique versionnée ${name} (empreinte ${keyId(committed)}) : ` +
+        'index non signé, rien n\'est publié. Rangez dans le secret la clé privée qui correspond à la clé versionnée, ou changez la clé versionnée par une PR si la clé a été remplacée.',
+    );
+  }
+  return fromSecret;
 }
 
 async function main() {
@@ -54,7 +68,6 @@ async function main() {
   const store = new GitHubStore({ repo, target: process.env.GITHUB_SHA });
   const signed = await publish({ store, built, privateKey, official, repositoryName: name, log: console.log });
   await writeFile(path.join(ROOT, 'dist', 'index.json'), `${JSON.stringify(signed, null, 2)}\n`);
-  await writeFile(path.join(ROOT, 'dist', 'index-signing.pub.pem'), createPublicKey(privateKey).export({ type: 'spki', format: 'pem' }));
   console.log(`Index : ${store.urls.index}`);
 }
 

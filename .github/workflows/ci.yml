@@ -4,7 +4,8 @@
 #   empaquetage .tgz et sha256, puis toute la chaîne de publication dans un dossier local, signée par une clé de test
 #   générée pour l'occasion. Lecture seule, aucun secret.
 # - « publier » (main seulement, jamais sur une PR) : Releases GitHub des nouvelles versions, index signé par la clé du
-#   secret MIRE_ADDONS_SIGNING_KEY, puis relecture de l'index publié à son adresse publique.
+#   secret MIRE_ADDONS_SIGNING_KEY (qui doit correspondre à la clé publique versionnée dans keys/), puis relecture de
+#   l'index publié à son adresse publique, vérifiée avec cette clé versionnée.
 #
 # Les actions sont épinglées par SHA de commit (la version est en commentaire).
 name: CI et publication
@@ -91,5 +92,5 @@ jobs:
       - name: Lecture publique de l'index et des paquets
         run: |
           node scripts/verify-index.mjs "https://github.com/${GITHUB_REPOSITORY}/releases/download/index/index.json" \
-            --key dist/index-signing.pub.pem --packages --retries 4 \
+            --key keys/mire-addons-signing.pub.pem --packages --retries 4 \
             $(node -p "require('./repository.json').official ? '--official' : ''")

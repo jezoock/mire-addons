@@ -118,6 +118,7 @@ Puis gardez une copie de la clé privée hors ligne (gestionnaire de mots de pas
 disque : perdue, elle oblige à changer de clé dans Mire ; volée, elle permet de signer un faux index.
 
 **3. Donner la clé publique** (`mire-addons-signing.pub.pem`, sans danger à partager) : elle est versionnée dans
-`keys/`, puis intégrée à Mire (tâche P3-07). Dès qu'une clé est dans `keys/`, la CI refuse de signer avec une autre.
+`keys/` (clé officielle : `keys/mire-addons-signing.pub.pem`), puis intégrée à Mire (tâche P3-07). La CI refuse de
+signer si la clé du secret n'est pas exactement celle-là, et relit l'index publié avec elle.
 
 Sans le secret, la publication échoue avec un message clair ; validation, build et tests continuent de passer.
