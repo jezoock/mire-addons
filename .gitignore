@@ -1,0 +1,7 @@
+node_modules/
+dist/
+*.tgz
+*.key
+*.pem
+!keys/*.pub.pem
+.DS_Store
