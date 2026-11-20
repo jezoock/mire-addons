@@ -1,0 +1,45 @@
+{
+  "$schema": "../../sdk/schema/mire-plugin.schema.json",
+  "id": "mire.tmdb",
+  "version": "1.0.0",
+  "engines": {
+    "mire": "^1.0.0"
+  },
+  "level": "code",
+  "contributes": {
+    "metadata": [
+      {
+        "id": "tmdb",
+        "main": "src/metadata.mjs",
+        "kinds": ["video"]
+      }
+    ],
+    "search": [
+      {
+        "id": "ouregarder",
+        "main": "src/search.mjs"
+      }
+    ]
+  },
+  "permissions": {
+    "hosts": ["api.themoviedb.org", "image.tmdb.org"]
+  },
+  "settings": [
+    {
+      "key": "token",
+      "type": "secret"
+    },
+    {
+      "key": "region",
+      "type": "choice",
+      "default": "auto",
+      "options": ["auto", "fr", "be", "ch", "lu", "ca", "us", "gb"]
+    },
+    {
+      "key": "language",
+      "type": "text",
+      "default": "auto"
+    }
+  ],
+  "i18n": "i18n/"
+}
