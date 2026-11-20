@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "code": "fr",
+    "name": "Français",
+    "app": "1.0.0"
+  },
+  "messages": {
+    "plugin": {
+      "name": "TMDB",
+      "description": "Infos et affiches des films et séries, et « Où regarder » dans la Recherche, depuis le catalogue TMDB. Demande une clé TMDB gratuite."
+    },
+    "settings": {
+      "token": {
+        "label": "Clé ou jeton TMDB",
+        "help": "Créez un compte sur themoviedb.org, puis copiez le « jeton d’accès en lecture à l’API » depuis Paramètres, rubrique API."
+      },
+      "region": {
+        "label": "Pays des disponibilités",
+        "options": {
+          "auto": "Selon la langue de Mire",
+          "fr": "France",
+          "be": "Belgique",
+          "ch": "Suisse",
+          "lu": "Luxembourg",
+          "ca": "Canada",
+          "us": "États-Unis",
+          "gb": "Royaume-Uni"
+        }
+      },
+      "language": {
+        "label": "Langue des fiches",
+        "help": "« auto » : la langue de Mire. Sinon un code comme fr-FR ou en-US."
+      }
+    },
+    "tmdb": {
+      "skipped": "vidéos (clé TMDB absente)",
+      "noKey": "Ajoutez une clé TMDB dans les réglages du plugin TMDB pour chercher les films et séries.",
+      "watchNoKey": "Ajoutez une clé TMDB gratuite pour voir ici les films et séries correspondants, avec le service où les regarder.",
+      "unreachable": "Le catalogue TMDB est injoignable. Vérifiez la connexion Internet.",
+      "keyRefused": "Clé TMDB refusée. Vérifiez-la dans les réglages du plugin TMDB.",
+      "status": "TMDB a répondu avec le code {status}.",
+      "series": "Série",
+      "movie": "Film",
+      "attribution": "Catalogue : TMDB. Disponibilités : JustWatch."
+    }
+  }
+}

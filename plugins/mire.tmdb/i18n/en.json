@@ -1,0 +1,47 @@
+{
+  "meta": {
+    "code": "en",
+    "name": "English",
+    "app": "1.0.0"
+  },
+  "messages": {
+    "plugin": {
+      "name": "TMDB",
+      "description": "Info and posters for movies and series, and “Where to watch” in Search, from the TMDB catalogue. Needs a free TMDB key."
+    },
+    "settings": {
+      "token": {
+        "label": "TMDB key or token",
+        "help": "Create an account on themoviedb.org, then copy the “API read access token” from Settings, API section."
+      },
+      "region": {
+        "label": "Country of availability",
+        "options": {
+          "auto": "Based on Mire's language",
+          "fr": "France",
+          "be": "Belgium",
+          "ch": "Switzerland",
+          "lu": "Luxembourg",
+          "ca": "Canada",
+          "us": "United States",
+          "gb": "United Kingdom"
+        }
+      },
+      "language": {
+        "label": "Language of the info",
+        "help": "“auto”: Mire's language. Otherwise a code such as en-US or fr-FR."
+      }
+    },
+    "tmdb": {
+      "skipped": "videos (no TMDB key)",
+      "noKey": "Add a TMDB key in the TMDB plugin settings to look up movies and series.",
+      "watchNoKey": "Add a free TMDB key to see matching movies and series here, with the service where you can watch them.",
+      "unreachable": "Can't reach the TMDB catalogue. Check your internet connection.",
+      "keyRefused": "TMDB key refused. Check it in the TMDB plugin settings.",
+      "status": "TMDB responded with code {status}.",
+      "series": "Series",
+      "movie": "Movie",
+      "attribution": "Catalogue: TMDB. Availability: JustWatch."
+    }
+  }
+}
