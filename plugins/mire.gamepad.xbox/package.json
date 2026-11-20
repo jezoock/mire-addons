@@ -1,0 +1,16 @@
+{
+  "name": "mire.gamepad.xbox",
+  "private": true,
+  "description": "Profil de manette xbox (données seules)",
+  "files": [
+    "mire-plugin.json",
+    "i18n/",
+    "gamepads/"
+  ],
+  "scripts": {
+    "validate": "mire-plugin validate . --official"
+  },
+  "devDependencies": {
+    "@mire/plugin-sdk": "0.1.0"
+  }
+}
