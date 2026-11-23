@@ -1,0 +1,16 @@
+{
+  "name": "mire.game-sites",
+  "private": true,
+  "description": "Sites légaux (jeux amateurs, domaine public, jeux récents) proposés pour chaque console par « Ajouter des jeux ».",
+  "files": [
+    "mire-plugin.json",
+    "i18n/",
+    "packs/"
+  ],
+  "scripts": {
+    "validate": "mire-plugin validate . --official"
+  },
+  "devDependencies": {
+    "@mire/plugin-sdk": "0.1.0"
+  }
+}

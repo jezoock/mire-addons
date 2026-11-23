@@ -1,0 +1,13 @@
+{
+  "meta": {
+    "code": "fr",
+    "name": "Français",
+    "app": "1.0.0"
+  },
+  "messages": {
+    "plugin": {
+      "name": "Sites de jeux",
+      "description": "Sites légaux (jeux amateurs, domaine public, jeux récents) proposés pour chaque console par « Ajouter des jeux »."
+    }
+  }
+}

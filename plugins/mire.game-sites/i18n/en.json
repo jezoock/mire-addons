@@ -1,0 +1,13 @@
+{
+  "meta": {
+    "code": "en",
+    "name": "English",
+    "app": "1.0.0"
+  },
+  "messages": {
+    "plugin": {
+      "name": "Game sites",
+      "description": "Legal sites (homebrew, public domain, recent games) offered for each console by “Add games”."
+    }
+  }
+}
