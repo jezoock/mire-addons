@@ -1,0 +1,21 @@
+{
+  "meta": {
+    "code": "fr",
+    "name": "Français",
+    "app": "1.0.0"
+  },
+  "messages": {
+    "plugin": {
+      "name": "Jeux libres",
+      "description": "Jeux récents créés pour de vieilles consoles, distribués gratuitement par leurs auteurs."
+    },
+    "freeGames": {
+      "nova": { "desc": "Plateformes : un écureuil qui copie les pouvoirs de ses ennemis." },
+      "thwaite": { "desc": "Défendez vos villages contre une pluie de missiles." },
+      "croom": { "desc": "Jeu de mémoire : retrouvez les paires de cartes." },
+      "libbet": { "desc": "Réflexion : passez sur chaque case du sol sans rester coincé." },
+      "ucity": { "desc": "Construisez et gérez votre ville, dans l’esprit de SimCity." },
+      "cavestory": { "desc": "Le grand jeu d’aventure gratuit, adapté pour la Mega Drive, en français." }
+    }
+  }
+}

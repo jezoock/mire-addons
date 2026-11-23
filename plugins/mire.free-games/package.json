@@ -1,0 +1,16 @@
+{
+  "name": "mire.free-games",
+  "private": true,
+  "description": "Jeux récents créés pour de vieilles consoles, distribués gratuitement par leurs auteurs.",
+  "files": [
+    "mire-plugin.json",
+    "i18n/",
+    "packs/"
+  ],
+  "scripts": {
+    "validate": "mire-plugin validate . --official"
+  },
+  "devDependencies": {
+    "@mire/plugin-sdk": "0.1.0"
+  }
+}

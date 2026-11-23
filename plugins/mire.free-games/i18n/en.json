@@ -1,0 +1,21 @@
+{
+  "meta": {
+    "code": "en",
+    "name": "English",
+    "app": "1.0.0"
+  },
+  "messages": {
+    "plugin": {
+      "name": "Free games",
+      "description": "Recent games made for old consoles, given away for free by their authors."
+    },
+    "freeGames": {
+      "nova": { "desc": "Platformer: a squirrel who copies the powers of its enemies." },
+      "thwaite": { "desc": "Defend your villages from a rain of missiles." },
+      "croom": { "desc": "Memory game: find the matching pairs of cards." },
+      "libbet": { "desc": "Puzzle: step on every tile of the floor without getting stuck." },
+      "ucity": { "desc": "Build and run your own city, in the spirit of SimCity." },
+      "cavestory": { "desc": "The great free adventure game, ported to the Mega Drive, in French." }
+    }
+  }
+}
