@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "code": "fr",
+    "name": "Français",
+    "app": "1.0.0"
+  },
+  "messages": {
+    "plugin": {
+      "name": "Palette Velours",
+      "description": "Une palette sombre et chaude, aux tons bruns, comme une salle de cinéma."
+    },
+    "palettes": {
+      "velours": {
+        "name": "Velours"
+      }
+    }
+  }
+}

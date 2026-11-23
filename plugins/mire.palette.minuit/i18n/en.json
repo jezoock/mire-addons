@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "code": "en",
+    "name": "English",
+    "app": "1.0.0"
+  },
+  "messages": {
+    "plugin": {
+      "name": "Midnight palette",
+      "description": "A dark palette in midnight blue tones."
+    },
+    "palettes": {
+      "minuit": {
+        "name": "Midnight"
+      }
+    }
+  }
+}

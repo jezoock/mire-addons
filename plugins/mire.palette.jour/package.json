@@ -1,0 +1,16 @@
+{
+  "name": "mire.palette.jour",
+  "private": true,
+  "description": "Palette claire Plein jour (données seules)",
+  "files": [
+    "mire-plugin.json",
+    "i18n/",
+    "palettes/"
+  ],
+  "scripts": {
+    "validate": "mire-plugin validate . --official"
+  },
+  "devDependencies": {
+    "@mire/plugin-sdk": "0.1.0"
+  }
+}

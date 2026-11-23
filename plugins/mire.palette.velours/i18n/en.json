@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "code": "en",
+    "name": "English",
+    "app": "1.0.0"
+  },
+  "messages": {
+    "plugin": {
+      "name": "Velvet palette",
+      "description": "A warm dark palette in brown tones, like a cinema."
+    },
+    "palettes": {
+      "velours": {
+        "name": "Velvet"
+      }
+    }
+  }
+}
