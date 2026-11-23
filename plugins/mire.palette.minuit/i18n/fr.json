@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "code": "fr",
+    "name": "Français",
+    "app": "1.0.0"
+  },
+  "messages": {
+    "plugin": {
+      "name": "Palette Minuit",
+      "description": "Une palette sombre aux tons bleu nuit."
+    },
+    "palettes": {
+      "minuit": {
+        "name": "Minuit"
+      }
+    }
+  }
+}

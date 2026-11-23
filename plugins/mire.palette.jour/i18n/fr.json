@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "code": "fr",
+    "name": "Français",
+    "app": "1.0.0"
+  },
+  "messages": {
+    "plugin": {
+      "name": "Palette Plein jour",
+      "description": "Une palette claire pour les pièces lumineuses : fond crème, couleurs assombries pour rester lisibles."
+    },
+    "palettes": {
+      "jour": {
+        "name": "Plein jour"
+      }
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "meta": {
+    "code": "en",
+    "name": "English",
+    "app": "1.0.0"
+  },
+  "messages": {
+    "plugin": {
+      "name": "Daylight palette",
+      "description": "A light palette for bright rooms: cream background, darker colours that stay easy to read."
+    },
+    "palettes": {
+      "jour": {
+        "name": "Daylight"
+      }
+    }
+  }
+}

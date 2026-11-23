@@ -1,0 +1,16 @@
+{
+  "name": "mire.palette.velours",
+  "private": true,
+  "description": "Palette sombre Velours (données seules)",
+  "files": [
+    "mire-plugin.json",
+    "i18n/",
+    "palettes/"
+  ],
+  "scripts": {
+    "validate": "mire-plugin validate . --official"
+  },
+  "devDependencies": {
+    "@mire/plugin-sdk": "0.1.0"
+  }
+}
