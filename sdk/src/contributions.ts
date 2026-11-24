@@ -16,11 +16,41 @@ import type { PluginContext } from './context.ts';
 export type ElementInput = Omit<Element, 'source' | 'added'> & { added?: number };
 
 /**
+ * Type de fichiers cherchés dans un emplacement : vidéos, musique et images pour un emplacement de la bibliothèque ;
+ * `game` pour un dossier de jeux PC (P5-13), proposé de la même façon. Une source ne prend que les emplacements dont
+ * elle sait lire le type.
+ */
+export type SourceMediaKind = 'video' | 'audio' | 'image' | 'game';
+
+/**
+ * Emplacement de la bibliothèque ou dossier de jeux PC, tel que le cœur le passe à une source de plugin (`handles`,
+ * `scan`) : un dossier ou un partage réseau (`path`), ou une adresse (`url`). Les emplacements restent dans la
+ * configuration de Mire ; un dossier n'est passé qu'à une source qui l'a accepté (`handles`), et lui est alors accordé
+ * (`ctx.files`) tant qu'il reste dans la bibliothèque ou dans les dossiers de jeux.
+ */
+export interface SourceLocation {
+  /** Emplacement tel que l'utilisateur l'a saisi (`D:\\Films`, `smb://nas/films`, `https://…/films/`). */
+  location: string;
+  /** Dossier à lire (chemin absolu), pour un dossier ou un partage réseau. */
+  path?: string;
+  /** Adresse, pour un serveur web ou une liste de lecture. */
+  url?: string;
+  /** Vrai pour un partage réseau (`\\NAS\\Films`, `smb://…`), lu comme un dossier monté par le système. */
+  network: boolean;
+  /** Types de fichiers demandés à cet emplacement. */
+  kinds: SourceMediaKind[];
+}
+
+/**
  * Source d'éléments (contribution `sources`) : trouve des éléments dans des emplacements configurés (dossier,
  * serveur, liste…) et les donne au catalogue. Elle réunit les sources de la bibliothèque, des jeux et de la
  * télévision.
  *
- * `Location` est l'emplacement tel que la source le reçoit de sa configuration.
+ * `Location` est l'emplacement tel que la source le reçoit. Pour un plugin, c'est un emplacement de la bibliothèque
+ * (`SourceLocation`) : le cœur demande `handles` à chaque source, puis appelle `scan` pour chaque emplacement accepté
+ * (le cœur fixe alors l'instance) ; une source qui n'accepte aucun emplacement reçoit `scan(null)`, une fois, sous
+ * l'identifiant de sa contribution. Seuls les plugins inclus ou du dépôt officiel reçoivent les emplacements de la
+ * bibliothèque, et un dossier seulement s'ils déclarent la permission `folders`.
  */
 export interface ElementSource<Location = unknown> {
   /** Identifiant de la source : celui de la contribution (`src-local`, `src-http`…). */
@@ -29,11 +59,18 @@ export interface ElementSource<Location = unknown> {
   readonly tags: readonly string[];
   /** Vrai si la source sait analyser cet emplacement (emplacements gérés). */
   handles(location: Location): boolean;
-  /** Identifiant stable de l'emplacement : l'`instance` de la source des éléments. */
+  /**
+   * Identifiant stable de l'emplacement : l'`instance` de la source des éléments. Pour un emplacement de la
+   * bibliothèque passé à un plugin, le cœur fixe lui-même l'instance (chemin ou adresse normalisés) : un plugin peut
+   * rendre `location.path ?? location.url`.
+   */
   instance(location: Location): string;
   /**
    * Analyse d'un emplacement : la liste complète de ses éléments. Lève une erreur au message affichable si
    * l'emplacement est inaccessible (le catalogue garde alors les éléments de l'analyse précédente).
+   *
+   * Un fichier local garde la clé que lui donne le cœur (`local:<chemin>`, chemin normalisé) si son `open.path` est
+   * ce même chemin, dans un dossier accordé ; ses images peuvent être des fichiers de ces dossiers.
    */
   scan(location: Location): Promise<ElementInput[]>;
 }
@@ -83,8 +120,12 @@ export interface MetadataFacts {
   overview?: string;
   genre?: string;
   artist?: string;
-  /** Chemin de l'image copiée dans le dossier d'images. */
+  /**
+   * Image (affiche) : un plugin rend son adresse `https:`, sur un hôte de ses `permissions.hosts` ; Mire la copie dans
+   * son dossier d'images et enregistre le chemin de la copie.
+   */
   image: string | null;
+  /** Image de fond, comme `image`. */
   backdrop?: string | null;
   series?: boolean;
   source: string;
@@ -175,6 +216,40 @@ export interface MetadataProvider<Item = Element, Ctx = PluginContext, JobCtx ex
 export interface SearchProvider<Result = unknown, Ctx = PluginContext> {
   id: string;
   search(query: string, ctx: Ctx): Promise<Result>;
+}
+
+// ---------------------------------------------------------------------------------------------------------------
+// Sous-titres (`subtitles`)
+
+/**
+ * Sous-titre trouvé pour une vidéo : un fichier local (`path`) ou une adresse `https:` (`url`), au format SubRip
+ * (`.srt`) ou WebVTT (`.vtt`). Mire le lit lui-même, le convertit en WebVTT et l'affiche comme du texte, jamais comme
+ * du HTML.
+ */
+export interface SubtitleFound {
+  /** Fichier `.srt` ou `.vtt` (chemin absolu), dans un dossier accordé au plugin. */
+  path?: string;
+  /** Adresse `https:` du fichier, sur un hôte déclaré dans `permissions.hosts`. */
+  url?: string;
+  /** Langue (code ISO 639 : `fr`, `en`, `pt-BR`), ou vide si elle n'est pas connue. */
+  lang?: string;
+  /** Nom montré dans le choix des sous-titres (`fr`, `forced.fr`…) ; à défaut, Mire écrit « Sous-titres ». */
+  label?: string;
+}
+
+/**
+ * Fournisseur de sous-titres (contribution `subtitles`) : à l'ouverture d'une vidéo, Mire demande ses sous-titres à
+ * chaque fournisseur actif et réunit les résultats.
+ *
+ * `videoPath` est le chemin absolu d'une vidéo locale que Mire a déjà le droit de lire. Pendant l'appel, le dossier
+ * de cette vidéo est accordé au plugin (`ctx.files`) s'il déclare la permission `folders`. Seuls les plugins inclus
+ * ou du dépôt officiel sont interrogés. Rendre `[]` quand rien n'est trouvé ; une erreur levée compte comme une panne
+ * du plugin.
+ */
+export interface SubtitleProvider {
+  /** Identifiant : celui de la contribution. */
+  id: string;
+  find(videoPath: string): Promise<SubtitleFound[]>;
 }
 
 // ---------------------------------------------------------------------------------------------------------------
@@ -316,6 +391,7 @@ export interface CodeContributionTypes {
   metadata: MetadataProvider;
   taggers: Tagger;
   search: SearchProvider;
+  subtitles: SubtitleProvider;
   webExtensions: WebExtension;
   downloaders: Downloader;
 }
