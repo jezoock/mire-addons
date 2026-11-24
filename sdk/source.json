@@ -1,12 +1,12 @@
 {
   "repository": "https://github.com/jezoock/mire",
   "path": "packages/plugin-sdk",
-  "commit": "7ecac16bc3193ce9b1fc7dc409f6fd4ab32984ac",
+  "commit": "e1063abc896ac5f8acd91b31ebedd0afac7f30f9",
   "version": "0.1.0",
   "files": {
     "src/cli.ts": "44d9b18283d50728144ac2c4285bc598c3eed061c529fd86577b23e68826d475",
-    "src/context.ts": "bb93fb6cb1d81991830049ec16bfccabf474b89594ba7360d6c25709d1d1bc57",
-    "src/contributions.ts": "c8fa0b9cfaef2002a37d6abe99c29534eadd14cf7497493b9f733a01f6bb2fe7",
+    "src/context.ts": "89370e07f5bc66c2763c1e4247b038d833a0730a0cce871f550a6cc32957e4a6",
+    "src/contributions.ts": "29bc4675edcff67349efe3cf297065c33397b7a64b055a5f01632ef041e9a7bb",
     "src/element.ts": "5da4836451c3d398699559b22c6783ce6d08c83e794cea92d9ab669d8cf5e2c8",
     "src/index.ts": "570603a95be62f097d2d4ba83b0bc916b13c0fc20cdac02a64137cb21db8d757",
     "src/manifest.ts": "5fdb5eb8d60c5a0c2d53035d40214819ae6d4165131ff8ab5c9c7aba4e4d99ed",
